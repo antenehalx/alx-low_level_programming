@@ -1,51 +1,72 @@
 #include "lists.h"
 
 /**
-* free_listint_safe - frees a list
-* @h: the pointer to a pointer of head
-*
-* Description: does stuff. i didnt get this right
-*	this is similar to the last problem, but now we
-*	want to free instead of print. inside the second loop
-*	pretty much the same code to iterate through, just free it all
-* Return: the size of the list
-*/
+ * free_listp2 - frees a linked list
+ * @head: head of a list.
+ *
+ * Return: no return.
+ */
+void free_listp2(listp_t **head)
+{
+	listp_t *temp;
+	listp_t *curr;
 
+	if (head != NULL)
+	{
+		curr = *head;
+		while ((temp = curr) != NULL)
+		{
+			curr = curr->next;
+			free(temp);
+		}
+		*head = NULL;
+	}
+}
+
+/**
+ * free_listint_safe - frees a linked list.
+ * @h: head of a list.
+ *
+ * Return: size of the list that was freed.
+ */
 size_t free_listint_safe(listint_t **h)
 {
-	size_t count = 0;
-	listint_t **array;
-	unsigned int i = 0;
-	unsigned int flag = 0;
+	size_t nnodes = 0;
+	listp_t *hptr, *new, *add;
+	listint_t *curr;
 
-	array = malloc(sizeof(listint_t *) * 1024);
-	if (!array)
-		exit(98);
+	hptr = NULL;
 	while (*h != NULL)
 	{
-		for (i = 0; i < count; i++)
+		new = malloc(sizeof(listp_t));
+
+		if (new == NULL)
+			exit(98);
+
+		new->p = (void *)*h;
+		new->next = hptr;
+		hptr = new;
+
+		add = hptr;
+
+		while (add->next != NULL)
 		{
-			if (*h == array[i])
+			add = add->next;
+			if (*h == add->p)
 			{
-				flag = 1;
-				break;
+				*h = NULL;
+				free_listp2(&hptr);
+				return (nnodes);
 			}
-			else
-				flag = 0;
 		}
-		if (flag == 1)
-			break;
-		array[count] = *h;
+
+		curr = *h;
 		*h = (*h)->next;
-		count++;
+		free(curr);
+		nnodes++;
 	}
-	i = 0;
-	while (i < count)
-	{
-		free(array[i]);
-		i++;
-	}
-	free(array);
+
 	*h = NULL;
-	return (count);
+	free_listp2(&hptr);
+	return (nnodes);
 }
